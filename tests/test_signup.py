@@ -3,24 +3,25 @@
 import pytest
 from fastapi.testclient import TestClient
 import copy
-from src import app as app_module
+from src.app import app, activities as original_activities_data
 
 
 @pytest.fixture
 def client():
     """Provide a test client with a fresh copy of activities for each test"""
     # Store original activities
-    original_activities = copy.deepcopy(app_module.app.activities)
+    from src import app as app_module
+    original_activities = copy.deepcopy(original_activities_data)
     
     # Reset activities for this test
-    app_module.app.activities = copy.deepcopy(original_activities)
+    app_module.activities = copy.deepcopy(original_activities)
     
-    client = TestClient(app_module.app)
+    client = TestClient(app)
     
     yield client
     
     # Restore original activities after test
-    app_module.app.activities = original_activities
+    app_module.activities = original_activities
 
 
 def test_signup_successful(client):
